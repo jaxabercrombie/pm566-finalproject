@@ -1,0 +1,15 @@
+---
+title: "Contact Information"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+#### Interested in contacting me?
+
+Send a message to me at my **email:** [jabercro\@usc.edu](mailto:jabercro@usc.edu)
+
+Connect with me on **LinkedIn:** <https://www.linkedin.com/in/jaxon-abercrombie/>
+
+Check out my **GitHub**: <https://github.com/jaxabercrombie>

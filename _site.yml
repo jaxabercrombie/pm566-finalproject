@@ -1,0 +1,18 @@
+name: "Investigating California's COVID-19Vaccination Efforts by Region/County"
+output_dir: "."
+navbar:
+  title: "Investigating California's COVID-19 Vaccination Efforts by Region/County"
+  left:
+    - text: "Project Homepage"
+      href: index.html
+    - text: "Data Sourcing and Processing"
+      href: data.html
+    - text: "Data Tables"
+      href: tables.html
+    - text: "Source Code"
+      href: sourcecode.html
+    - text: "Contact Information"
+      href: contact.html
+output:
+  html_document:
+    theme: sandstone
