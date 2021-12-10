@@ -313,7 +313,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Investigating California's COVID-19 Vaccination Efforts by Region/County</a>
+      <a class="navbar-brand" href="index.html">Investigating California's COVID-19 Vaccination Efforts by Region and County</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -349,20 +349,663 @@ div.tocify {
 </div>
 
 
-<div id="table-1" class="section level3">
-<h3><u>Table 1:</u></h3>
+<p><span class="math display">\[\\[.05in]\]</span>This page provides five supporting data tables for the homepage figures. While visualizations are more interactive and are intuitive, providing stationary tables with supporting data seemed important to display descriptive statistics.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
+<div id="table-1-vaccination-efforts-by-region-fully-vaccinated" class="section level3">
+<h3><u>Table 1: Vaccination Efforts by Region (Fully Vaccinated)</u></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Region</th>
+<th align="center">Min %</th>
+<th align="center">Mean %</th>
+<th align="center">Max %</th>
+<th align="center">SD %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">58.45</td>
+<td align="center">69.16</td>
+<td align="center">77.99</td>
+<td align="center">6.43</td>
+</tr>
+<tr class="even">
+<td align="center">Central California</td>
+<td align="center">36.37</td>
+<td align="center">50.08</td>
+<td align="center">62.98</td>
+<td align="center">7.76</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern California</td>
+<td align="center">43.93</td>
+<td align="center">58.64</td>
+<td align="center">67.21</td>
+<td align="center">7.90</td>
+</tr>
+<tr class="even">
+<td align="center">Superior California</td>
+<td align="center">25.40</td>
+<td align="center">46.01</td>
+<td align="center">59.86</td>
+<td align="center">9.12</td>
+</tr>
+</tbody>
+</table>
+<p>The above table supports Figure 1 from the homepage of this project, and the table uses data from October 31st, 2021, the most recent day of full data for counties. For each region, descriptive statistics for the percent fully vaccinated individuals are shown, with minimum, mean, maximum, and standard deviation values describing at the county-level. For example, the cell for the Bay Area minimum demonstrates that the county with the lowest percent of fully vaccinated individuals has a percent of 58.45%. These minimum and maximum values are verifiable by referencing the October 31st date in Figure 1. Beyond providing the minimum and maximum to demonstrate the gaps in vaccination percentages, including the mean gives more context to show a region’s overall vaccination success alongside the standard deviation.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
 </div>
-<div id="table-2" class="section level3">
-<h3><u>Table 2:</u></h3>
+<div id="table-2-cases-deaths-and-doses" class="section level3">
+<h3><u>Table 2: Cases, Deaths, and Doses</u></h3>
+<table style="width:100%;">
+<colgroup>
+<col width="13%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="6%" />
+<col width="7%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Region</th>
+<th align="center">Min Cases</th>
+<th align="center">Mean Cases</th>
+<th align="center">Max Cases</th>
+<th align="center">SD Cases</th>
+<th align="center">Min Deaths</th>
+<th align="center">Mean Deaths</th>
+<th align="center">Max Deaths</th>
+<th align="center">SD Deaths</th>
+<th align="center">Min Doses</th>
+<th align="center">Mean Doses</th>
+<th align="center">Max Doses</th>
+<th align="center">SD Doses</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">0</td>
+<td align="center">106.80</td>
+<td align="center">1752</td>
+<td align="center">174.45</td>
+<td align="center">0</td>
+<td align="center">1.34</td>
+<td align="center">32</td>
+<td align="center">2.92</td>
+<td align="center">0</td>
+<td align="center">3347.72</td>
+<td align="center">45081</td>
+<td align="center">4913.34</td>
+</tr>
+<tr class="even">
+<td align="center">Central California</td>
+<td align="center">0</td>
+<td align="center">73.66</td>
+<td align="center">1369</td>
+<td align="center">141.74</td>
+<td align="center">0</td>
+<td align="center">1.14</td>
+<td align="center">23</td>
+<td align="center">2.49</td>
+<td align="center">0</td>
+<td align="center">1068.37</td>
+<td align="center">18514</td>
+<td align="center">2001.81</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern California</td>
+<td align="center">1</td>
+<td align="center">589.08</td>
+<td align="center">22284</td>
+<td align="center">1667.61</td>
+<td align="center">0</td>
+<td align="center">10.83</td>
+<td align="center">304</td>
+<td align="center">31.54</td>
+<td align="center">0</td>
+<td align="center">9527.48</td>
+<td align="center">137449</td>
+<td align="center">16680.92</td>
+</tr>
+<tr class="even">
+<td align="center">Superior California</td>
+<td align="center">0</td>
+<td align="center">14.48</td>
+<td align="center">192</td>
+<td align="center">23.39</td>
+<td align="center">0</td>
+<td align="center">0.21</td>
+<td align="center">7</td>
+<td align="center">0.60</td>
+<td align="center">0</td>
+<td align="center">207.27</td>
+<td align="center">3374</td>
+<td align="center">356.57</td>
+</tr>
+</tbody>
+</table>
+<p>Table 2 supports Figure 2 from the homepage of this project, and the table uses data from December 15, 2020 to October 31, 2021. For each region, descriptive statistics for cases, deaths, and doses in order to depict daily records of cases and deaths, as well as show the vaccination capacity of each region through daily doses administered. This table shows data that spans almost an entire year of data, and it is important to view the table with Figure 2 in mind since the plot provides a lot of context to the ebb and flow of cases, deaths, and doses. Means in this table demonstrate the average for the entirety of December 15 to October 31, which may be a comparable statistic between regions by analyzing the difference in the magnitude of averages (ex: Southern California has roughly five times as many average daily cases than the Bay Area). Of course, the size and population counts of these regions are vastly different, which is important to acknowledge. Future iterations of this table may incorporate a standardization procedure with data to make the numbers truly comparable.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
 </div>
-<div id="table-3" class="section level3">
-<h3><u>Table 3:</u></h3>
+<div id="table-3-vaccination-efforts-by-company" class="section level3">
+<h3><u>Table 3: Vaccination Efforts by Company</u></h3>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="6%" />
+<col width="5%" />
+<col width="6%" />
+<col width="5%" />
+<col width="5%" />
+<col width="6%" />
+<col width="5%" />
+<col width="6%" />
+<col width="5%" />
+<col width="5%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Region</th>
+<th align="center">Min J&amp;J</th>
+<th align="center">Mean J&amp;J</th>
+<th align="center">Max J&amp;J</th>
+<th align="center">SD J&amp;J</th>
+<th align="center">Cum. J&amp;J</th>
+<th align="center">Min Mod.</th>
+<th align="center">Mean Mod.</th>
+<th align="center">Max Mod.</th>
+<th align="center">SD Mod.</th>
+<th align="center">Cum. Mod.</th>
+<th align="center">Min Pfi.</th>
+<th align="center">Mean Pfi.</th>
+<th align="center">Max Pfi.</th>
+<th align="center">SD Pfi.</th>
+<th align="center">Cum. Pfi.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">0</td>
+<td align="center">122.62</td>
+<td align="center">8037</td>
+<td align="center">472.84</td>
+<td align="center">472336.88</td>
+<td align="center">0</td>
+<td align="center">1096.26</td>
+<td align="center">15964</td>
+<td align="center">1707.77</td>
+<td align="center">4222801.5</td>
+<td align="center">0</td>
+<td align="center">2128.83</td>
+<td align="center">34818</td>
+<td align="center">3226.75</td>
+<td align="center">8200252.3</td>
+</tr>
+<tr class="even">
+<td align="center">Central California</td>
+<td align="center">0</td>
+<td align="center">33.67</td>
+<td align="center">3004</td>
+<td align="center">123.99</td>
+<td align="center">216157.53</td>
+<td align="center">0</td>
+<td align="center">424.25</td>
+<td align="center">9727</td>
+<td align="center">892.37</td>
+<td align="center">2723702.9</td>
+<td align="center">0</td>
+<td align="center">610.44</td>
+<td align="center">10514</td>
+<td align="center">1120.72</td>
+<td align="center">3919017.7</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern California</td>
+<td align="center">0</td>
+<td align="center">338.32</td>
+<td align="center">24711</td>
+<td align="center">1282.71</td>
+<td align="center">1085994.22</td>
+<td align="center">0</td>
+<td align="center">3668.22</td>
+<td align="center">62780</td>
+<td align="center">7427.10</td>
+<td align="center">11774981.4</td>
+<td align="center">0</td>
+<td align="center">5520.88</td>
+<td align="center">71114</td>
+<td align="center">8884.17</td>
+<td align="center">17722030.3</td>
+</tr>
+<tr class="even">
+<td align="center">Superior California</td>
+<td align="center">0</td>
+<td align="center">8.83</td>
+<td align="center">861</td>
+<td align="center">29.72</td>
+<td align="center">45336.36</td>
+<td align="center">0</td>
+<td align="center">100.11</td>
+<td align="center">2664</td>
+<td align="center">203.51</td>
+<td align="center">514162.2</td>
+<td align="center">0</td>
+<td align="center">98.33</td>
+<td align="center">2729</td>
+<td align="center">197.24</td>
+<td align="center">505041.6</td>
+</tr>
+</tbody>
+</table>
+<p>This third table supports Figure 3 from the homepage of this project, and the table uses data from December 15, 2020 to October 31, 2021 as well. Table 3 includes data about dose counts for each company (Johnson &amp; Johnson, Moderna, and Pfizer) rather than percent of the market like Figure 3 does, which helps to provide more context and numerical evidence. Like most tables used for this project, the minimums, maximums, averages, and standard deviations are included for each vaccine company. Data in the table is meant to be comparable within regions rather than between, since, like the previous table, a region’s vaccination capability and population size may be vastly different. Since Johnson &amp; Johnson vaccines require only a single-dose for full vaccination, their share of the market is not as prominent. Even with an adjustment by multiplying Johnson &amp; Johnson doses by a factor of two, statistics do not change much. Whether or not any dose counts were attributed to booster shots was not indicated on the dataset, but maximums will likely not overcome that of winter 2020, so that factor is negligible. Rather, the cumulative doses administered may be altered by booster doses.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
 </div>
-<div id="table-4" class="section level3">
-<h3><u>Table 4:</u></h3>
+<div id="table-4-vaccination-efforts-by-age" class="section level3">
+<h3><u>Table 4: Vaccination Efforts by Age</u></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Region</th>
+<th align="center">Demographic</th>
+<th align="center">Min %</th>
+<th align="center">Mean %</th>
+<th align="center">Max %</th>
+<th align="center">SD %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">12-17</td>
+<td align="center">55.42</td>
+<td align="center">73.21</td>
+<td align="center">93.63</td>
+<td align="center">9.33</td>
+</tr>
+<tr class="even">
+<td align="center">Bay Area</td>
+<td align="center">18-49</td>
+<td align="center">63.95</td>
+<td align="center">81.54</td>
+<td align="center">96.10</td>
+<td align="center">10.45</td>
+</tr>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">50-64</td>
+<td align="center">76.79</td>
+<td align="center">84.75</td>
+<td align="center">90.60</td>
+<td align="center">4.72</td>
+</tr>
+<tr class="even">
+<td align="center">Bay Area</td>
+<td align="center">65+</td>
+<td align="center">69.52</td>
+<td align="center">76.30</td>
+<td align="center">81.36</td>
+<td align="center">3.51</td>
+</tr>
+<tr class="odd">
+<td align="center">Central</td>
+<td align="center">12-17</td>
+<td align="center">22.12</td>
+<td align="center">42.89</td>
+<td align="center">60.37</td>
+<td align="center">9.91</td>
+</tr>
+<tr class="even">
+<td align="center">Central</td>
+<td align="center">18-49</td>
+<td align="center">37.63</td>
+<td align="center">52.40</td>
+<td align="center">74.42</td>
+<td align="center">10.63</td>
+</tr>
+<tr class="odd">
+<td align="center">Central</td>
+<td align="center">50-64</td>
+<td align="center">47.01</td>
+<td align="center">70.80</td>
+<td align="center">96.02</td>
+<td align="center">11.74</td>
+</tr>
+<tr class="even">
+<td align="center">Central</td>
+<td align="center">65+</td>
+<td align="center">44.17</td>
+<td align="center">68.51</td>
+<td align="center">81.84</td>
+<td align="center">9.00</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern</td>
+<td align="center">12-17</td>
+<td align="center">41.92</td>
+<td align="center">59.38</td>
+<td align="center">96.34</td>
+<td align="center">14.72</td>
+</tr>
+<tr class="even">
+<td align="center">Southern</td>
+<td align="center">18-49</td>
+<td align="center">48.45</td>
+<td align="center">65.44</td>
+<td align="center">81.14</td>
+<td align="center">10.81</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern</td>
+<td align="center">50-64</td>
+<td align="center">64.31</td>
+<td align="center">78.88</td>
+<td align="center">90.20</td>
+<td align="center">8.10</td>
+</tr>
+<tr class="even">
+<td align="center">Southern</td>
+<td align="center">65+</td>
+<td align="center">69.27</td>
+<td align="center">76.14</td>
+<td align="center">86.49</td>
+<td align="center">5.58</td>
+</tr>
+<tr class="odd">
+<td align="center">Superior</td>
+<td align="center">12-17</td>
+<td align="center">16.61</td>
+<td align="center">32.69</td>
+<td align="center">54.15</td>
+<td align="center">10.29</td>
+</tr>
+<tr class="even">
+<td align="center">Superior</td>
+<td align="center">18-49</td>
+<td align="center">17.27</td>
+<td align="center">45.85</td>
+<td align="center">66.87</td>
+<td align="center">13.28</td>
+</tr>
+<tr class="odd">
+<td align="center">Superior</td>
+<td align="center">50-64</td>
+<td align="center">37.87</td>
+<td align="center">62.66</td>
+<td align="center">81.37</td>
+<td align="center">11.11</td>
+</tr>
+<tr class="even">
+<td align="center">Superior</td>
+<td align="center">65+</td>
+<td align="center">44.90</td>
+<td align="center">63.76</td>
+<td align="center">78.20</td>
+<td align="center">8.32</td>
+</tr>
+</tbody>
+</table>
+<p>Table 4 supports Figure 4 from the homepage of this project, and the table uses data from October 31, 2021 too. Data about each region, stratified by age group, is shown. Similar to Table 1, data is county-level, meaning the minimum for the Bay Area for the 12-17 group represents the county with the smallest vaccination percentage by October 31. Percentages like those in this table make data more comparable between region and demographic group, since they are standardized to be out of 100. Based on maximum percentages, leading regions for each demographic group can be deduced, as well as trailing regions based on minimum percentages.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
 </div>
-<div id="table-5" class="section level3">
-<h3><u>Table 5:</u></h3>
+<div id="table-5-vaccination-efforts-by-raceethnicity" class="section level3">
+<h3><u>Table 5: Vaccination Efforts by Race/Ethnicity</u></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Region</th>
+<th align="center">Demographic</th>
+<th align="center">Min %</th>
+<th align="center">Mean %</th>
+<th align="center">Max %</th>
+<th align="center">SD %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">American Indian or Alaska Native</td>
+<td align="center">41.64</td>
+<td align="center">54.87</td>
+<td align="center">89.39</td>
+<td align="center">14.15</td>
+</tr>
+<tr class="even">
+<td align="center">Bay Area</td>
+<td align="center">Asian</td>
+<td align="center">57.35</td>
+<td align="center">76.47</td>
+<td align="center">88.63</td>
+<td align="center">10.25</td>
+</tr>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">Black or African American</td>
+<td align="center">34.52</td>
+<td align="center">53.55</td>
+<td align="center">64.37</td>
+<td align="center">8.40</td>
+</tr>
+<tr class="even">
+<td align="center">Bay Area</td>
+<td align="center">Latino</td>
+<td align="center">42.12</td>
+<td align="center">56.78</td>
+<td align="center">76.87</td>
+<td align="center">9.52</td>
+</tr>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">Multiracial</td>
+<td align="center">29.18</td>
+<td align="center">40.69</td>
+<td align="center">49.46</td>
+<td align="center">6.51</td>
+</tr>
+<tr class="even">
+<td align="center">Bay Area</td>
+<td align="center">Native Hawaiian or Other Pacific Islander</td>
+<td align="center">50.60</td>
+<td align="center">74.44</td>
+<td align="center">87.67</td>
+<td align="center">14.31</td>
+</tr>
+<tr class="odd">
+<td align="center">Bay Area</td>
+<td align="center">White</td>
+<td align="center">46.70</td>
+<td align="center">62.47</td>
+<td align="center">75.68</td>
+<td align="center">7.02</td>
+</tr>
+<tr class="even">
+<td align="center">Central</td>
+<td align="center">American Indian or Alaska Native</td>
+<td align="center">6.10</td>
+<td align="center">30.18</td>
+<td align="center">50.31</td>
+<td align="center">12.47</td>
+</tr>
+<tr class="odd">
+<td align="center">Central</td>
+<td align="center">Asian</td>
+<td align="center">38.48</td>
+<td align="center">62.13</td>
+<td align="center">86.54</td>
+<td align="center">12.87</td>
+</tr>
+<tr class="even">
+<td align="center">Central</td>
+<td align="center">Black or African American</td>
+<td align="center">11.46</td>
+<td align="center">38.76</td>
+<td align="center">77.60</td>
+<td align="center">18.88</td>
+</tr>
+<tr class="odd">
+<td align="center">Central</td>
+<td align="center">Latino</td>
+<td align="center">26.82</td>
+<td align="center">39.47</td>
+<td align="center">60.71</td>
+<td align="center">6.97</td>
+</tr>
+<tr class="even">
+<td align="center">Central</td>
+<td align="center">Multiracial</td>
+<td align="center">1.50</td>
+<td align="center">25.26</td>
+<td align="center">54.36</td>
+<td align="center">17.97</td>
+</tr>
+<tr class="odd">
+<td align="center">Central</td>
+<td align="center">Native Hawaiian or Other Pacific Islander</td>
+<td align="center">49.51</td>
+<td align="center">69.93</td>
+<td align="center">96.97</td>
+<td align="center">12.68</td>
+</tr>
+<tr class="even">
+<td align="center">Central</td>
+<td align="center">White</td>
+<td align="center">19.72</td>
+<td align="center">44.29</td>
+<td align="center">60.41</td>
+<td align="center">10.32</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern</td>
+<td align="center">American Indian or Alaska Native</td>
+<td align="center">23.68</td>
+<td align="center">44.82</td>
+<td align="center">71.44</td>
+<td align="center">13.12</td>
+</tr>
+<tr class="even">
+<td align="center">Southern</td>
+<td align="center">Asian</td>
+<td align="center">38.25</td>
+<td align="center">65.57</td>
+<td align="center">79.60</td>
+<td align="center">11.93</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern</td>
+<td align="center">Black or African American</td>
+<td align="center">12.83</td>
+<td align="center">39.00</td>
+<td align="center">56.95</td>
+<td align="center">13.25</td>
+</tr>
+<tr class="even">
+<td align="center">Southern</td>
+<td align="center">Latino</td>
+<td align="center">38.18</td>
+<td align="center">46.75</td>
+<td align="center">62.25</td>
+<td align="center">7.96</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern</td>
+<td align="center">Multiracial</td>
+<td align="center">1.03</td>
+<td align="center">38.34</td>
+<td align="center">54.57</td>
+<td align="center">14.92</td>
+</tr>
+<tr class="even">
+<td align="center">Southern</td>
+<td align="center">Native Hawaiian or Other Pacific Islander</td>
+<td align="center">62.75</td>
+<td align="center">79.44</td>
+<td align="center">97.38</td>
+<td align="center">11.79</td>
+</tr>
+<tr class="odd">
+<td align="center">Southern</td>
+<td align="center">White</td>
+<td align="center">40.89</td>
+<td align="center">53.38</td>
+<td align="center">63.21</td>
+<td align="center">8.06</td>
+</tr>
+<tr class="even">
+<td align="center">Superior</td>
+<td align="center">American Indian or Alaska Native</td>
+<td align="center">11.37</td>
+<td align="center">32.31</td>
+<td align="center">47.00</td>
+<td align="center">10.26</td>
+</tr>
+<tr class="odd">
+<td align="center">Superior</td>
+<td align="center">Asian</td>
+<td align="center">35.25</td>
+<td align="center">57.65</td>
+<td align="center">74.96</td>
+<td align="center">11.51</td>
+</tr>
+<tr class="even">
+<td align="center">Superior</td>
+<td align="center">Black or African American</td>
+<td align="center">4.13</td>
+<td align="center">34.17</td>
+<td align="center">51.82</td>
+<td align="center">14.20</td>
+</tr>
+<tr class="odd">
+<td align="center">Superior</td>
+<td align="center">Latino</td>
+<td align="center">14.18</td>
+<td align="center">36.44</td>
+<td align="center">52.57</td>
+<td align="center">11.13</td>
+</tr>
+<tr class="even">
+<td align="center">Superior</td>
+<td align="center">Multiracial</td>
+<td align="center">13.83</td>
+<td align="center">25.19</td>
+<td align="center">39.14</td>
+<td align="center">8.57</td>
+</tr>
+<tr class="odd">
+<td align="center">Superior</td>
+<td align="center">Native Hawaiian or Other Pacific Islander</td>
+<td align="center">27.47</td>
+<td align="center">61.19</td>
+<td align="center">82.76</td>
+<td align="center">19.09</td>
+</tr>
+<tr class="even">
+<td align="center">Superior</td>
+<td align="center">White</td>
+<td align="center">25.85</td>
+<td align="center">43.64</td>
+<td align="center">57.71</td>
+<td align="center">8.65</td>
+</tr>
+</tbody>
+</table>
+<p>The above table supports Figure 5 from the homepage of this project, and, again, the table uses data from October 31, 2021. Data about each region, stratified by race/ethnicity, is shown. Similar to Table 1 and 4, data is county-level, meaning the minimum for the Bay Area for the Asian group represents the county with the smallest vaccination percentage for that group by October 31. Percentages like those in this table make data more comparable between region and demographic group, since they are standardized to be out of 100. Based on maximum percentages, leading regions for each demographic group can be deduced, as well as trailing regions based on minimum percentages.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
 </div>
 
 

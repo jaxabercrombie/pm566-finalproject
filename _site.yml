@@ -1,7 +1,7 @@
-name: "Investigating California's COVID-19Vaccination Efforts by Region/County"
+name: "Investigating California's COVID-19 Vaccination Efforts by Region and County"
 output_dir: "."
 navbar:
-  title: "Investigating California's COVID-19 Vaccination Efforts by Region/County"
+  title: "Investigating California's COVID-19 Vaccination Efforts by Region and County"
   left:
     - text: "Project Homepage"
       href: index.html

@@ -313,7 +313,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Investigating California's COVID-19 Vaccination Efforts by Region/County</a>
+      <a class="navbar-brand" href="index.html">Investigating California's COVID-19 Vaccination Efforts by Region and County</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -349,7 +349,352 @@ div.tocify {
 </div>
 
 
+<p><span class="math display">\[\\[.05in]\]</span></p>
+<p>This section of the website provides the source code for both the homepage and tables page of this project. Comments for chunks of code are provided to give context and give purpose to the code.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
+<div id="source-code-for-both" class="section level3">
+<h3><u>Source Code for Both</u></h3>
+<pre class="r"><code># Load Libraries and Sources
+library(tidyverse)
+library(plotly)
+library(cowplot)
+library(RCurl)
+library(scales)
+source(&quot;datawrangle.R&quot;)
 
+## Load and Alter Data 
+download1 &lt;- getURL(&quot;https://data.lacity.org/api/views/rpp7-mevy/rows.csv?accessType=DOWNLOAD&quot;)
+vaxCA &lt;- read.csv(text = download1)
+
+covidCA &lt;- read.csv(url(&quot;https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv&quot;))
+
+covidCA &lt;-
+  covidCA %&gt;%
+  mutate(county = area) # Make variable names the same between the two datasets
+
+vaxCA &lt;-
+  vaxCA %&gt;%
+  mutate(date = as.Date(vaxCA$date, &quot;%m/%d/%Y&quot;)) # Make data variable same format
+
+mergedCA &lt;- merge(vaxCA, covidCA, 
+                  by = c(&quot;date&quot;,&quot;county&quot;),
+                  all.x = TRUE)
+
+mergedCA &lt;-
+  mergedCA %&gt;%
+  filter(date &gt;= as.Date(&quot;2020-12-15&quot;)) %&gt;% # Start date of vaccines
+  filter(date &lt;= as.Date(&quot;2021-10-31&quot;)) %&gt;% # End date for consistency
+  group_by(date, county) %&gt;% 
+  summarise(across(c(total_doses,cumulative_total_doses,
+                     pfizer_doses,cumulative_pfizer_doses,
+                     moderna_doses,cumulative_moderna_doses,
+                     jj_doses,cumulative_jj_doses,
+                     partially_vaccinated,
+                     total_partially_vaccinated,fully_vaccinated,
+                     cumulative_fully_vaccinated,at_least_one_dose,
+                     cumulative_at_least_one_dose,population,
+                     cases,cumulative_cases,deaths,
+                     cumulative_deaths,total_tests,
+                     cumulative_total_tests,positive_tests,
+                     cumulative_positive_tests), mean, .groups = date))
+
+mergedCA &lt;-
+  mergedCA %&gt;%
+  mutate(dose_standard = (cumulative_total_doses/population),
+         pfizer_perc = ((cumulative_pfizer_doses/cumulative_total_doses)*100),
+         moderna_perc = ((cumulative_moderna_doses/cumulative_total_doses)*100),
+         jj_perc = ((cumulative_jj_doses/cumulative_total_doses)*100),
+         perc_vaccinated = (cumulative_fully_vaccinated/population)*100,
+         perc_partial = (cumulative_at_least_one_dose/population)*100)
+
+# Region categories for each county below
+
+superior &lt;- c(&quot;Butte&quot;, &quot;Colusa&quot;, &quot;Del Norte&quot;, &quot;Glenn&quot;, &quot;Humboldt&quot;, &quot;Lake&quot;, &quot;Lassen&quot;, &quot;Mendocino&quot;, &quot;Modoc&quot;, &quot;Nevada&quot;, &quot;Plumas&quot;, &quot;Shasta&quot;, &quot;Sierra&quot;, &quot;Siskiyou&quot;, &quot;Tehama&quot;, &quot;Trinity&quot;)
+
+central &lt;- c(&quot;Alpine&quot;, &quot;Amador&quot;, &quot;Calaveras&quot;, &quot;El Dorado&quot;, &quot;Fresno&quot;, &quot;Inyo&quot;, &quot;Kings&quot;, &quot;Madera&quot;, &quot;Mariposa&quot;, &quot;Merced&quot;, &quot;Mono&quot;, &quot;Placer&quot;, &quot;Sacramento&quot;, &quot;San Joaquin&quot;, &quot;Stanislaus&quot;, &quot;Sutter&quot;, &quot;Yuba&quot;, &quot;Tulare&quot;, &quot;Tuolumne&quot;, &quot;Yolo&quot;)
+
+bay &lt;- c(&quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Monterey&quot;, &quot;Napa&quot;, &quot;San Benito&quot;, &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Santa Cruz&quot;, &quot;Solano&quot;, &quot;Sonoma&quot;)
+
+southern &lt;- c(&quot;Imperial&quot;, &quot;Kern&quot;, &quot;Orange&quot;, &quot;Riverside&quot;, &quot;San Bernardino&quot;, &quot;San Diego&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Ventura&quot;, &quot;Los Angeles&quot;)
+
+mergedCA &lt;- # Sort counties into their categories
+  mergedCA %&gt;% 
+  mutate(region = case_when(county %in% superior ~ &quot;Superior California&quot;,
+                            county %in% central ~ &quot;Central California&quot;,
+                            county %in% bay ~ &quot;Bay Area&quot;,
+                            county %in% southern ~ &quot;Southern California&quot;))
+
+mergedCA3 &lt;-
+  mergedCA %&gt;%
+  group_by(region,date) %&gt;%
+  summarise(county = county,
+            region = region,
+            ave_moderna = ave(moderna_perc),
+            ave_pfizer = ave(pfizer_perc),
+            ave_jj = ave(jj_perc),
+            moderna_perc = moderna_perc,
+            pfizer_perc = pfizer_perc,
+            jj_perc = jj_perc,
+            moderna_doses = moderna_doses,
+            pfizer_doses = pfizer_doses,
+            jj_doses = jj_doses)
+
+mergedCA3[is.na(mergedCA3)] = 0 # Some math is zero divided by zero; replace the errors
+
+dataAge &lt;- datawrangle(&quot;Age Group&quot;) # Call on function to get data frame for age
+
+dataRace &lt;- datawrangle(&quot;Race/Ethnicity&quot;) # Call on function to get data frame for race
+
+dataRace[6,3] &lt;- 100.00 # Some data made some values above 100%; manual fix</code></pre>
+</div>
+<div id="homepage-source-code" class="section level3">
+<h3><u>Homepage Source Code</u></h3>
+<pre class="r"><code># Figure 1
+fig1 &lt;- 
+    mergedCA %&gt;%
+    ggplot() + 
+    geom_line(aes(x = date, 
+                  y = cumulative_fully_vaccinated/population*100, 
+                  color = county)) +
+    labs(title = &quot;Percent Fully Vaccinated Since Roll-out by Region&quot;, x = &quot;Date&quot;, 
+         y = &quot;&quot;, color = &quot;County&quot;) +
+  facet_wrap(~region)
+
+ggplotly(fig1) %&gt;% 
+  layout(yaxis = list(title = &quot;&quot;), # below code fixes axis label and title overlap
+             margin = list(l = 100), 
+             annotations = c(list(text = &quot;Percent Fully Vaccinated (%)&quot;,
+                                  x = -0.10,
+                                  xref = &quot;paper&quot;,
+                                  y = 0.5,
+                                  showarrow = F,
+                                  textangle = -90)))
+
+
+# Figure 2
+fig2 &lt;- 
+  mergedCA %&gt;%
+  ggplot(aes(group = region)) +
+  geom_line(mapping = aes(x = date, y = total_doses, color = &quot;Doses Administered&quot;)) +
+  geom_line(mapping = aes(x = date, y = cases, color = &quot;Case Count&quot;)) +
+  geom_line(mapping = aes(x = date, y = deaths, color = &quot;Death Count&quot;)) +
+  labs(title = &quot;Doses, Cases, and Deaths by Region&quot;, x = &quot;Date&quot;, y = &quot;&quot;) +
+  scale_colour_manual(values = c(&quot;Doses Administered&quot;=&quot;#C78888&quot;, 
+                                   &quot;Case Count&quot;=&quot;#88C7C2&quot;, 
+                                   &quot;Death Count&quot;=&quot;#E7D366&quot;)) +
+  facet_wrap(~region, scales = &quot;free_y&quot;, shrink = TRUE) +
+  scale_y_continuous(labels = comma) +
+  theme(legend.title = element_blank(), plot.title.position = &quot;middle&quot;)
+  
+ggplotly(fig2, tooltip = c(&quot;x&quot;, &quot;y&quot;)) %&gt;% 
+  layout(yaxis = list(title = &quot;&quot;),
+             margin = list(l = 100), 
+             annotations = c(list(text = &quot;Count&quot;,
+                                  x = -0.15,
+                                  xref = &quot;paper&quot;,
+                                  y = 0.5,
+                                  showarrow = F,
+                                  textangle = -90)))
+
+
+# Figure 3
+fig3 &lt;- 
+  mergedCA3 %&gt;%
+  ggplot(aes(group = region)) +
+  geom_line(aes(x = date, y = ave_moderna, color = &quot;Moderna&quot;)) +
+  geom_line(aes(x = date, y = ave_pfizer, color = &quot;Pfizer&quot;)) +
+  geom_line(aes(x = date, y = ave_jj, color = &quot;J&amp;J&quot;)) +
+  scale_colour_manual(values = c(&quot;Moderna&quot;=&quot;#C78888&quot;, 
+                                   &quot;Pfizer&quot;=&quot;#88C7C2&quot;, 
+                                   &quot;J&amp;J&quot;=&quot;#E7D366&quot;)) +
+    labs(title = &quot;Vaccination Efforts by Company&quot;, 
+         x = &quot;Date&quot;, y = &quot;&quot;, color = &quot;Company&quot;) +
+    theme(legend.title = element_blank(), 
+          axis.title.y = element_text(hjust = -1.5)) +
+    facet_wrap(~region)
+
+ggplotly(fig3, tooltip = c(&quot;x&quot;, &quot;y&quot;)) %&gt;% 
+  layout(yaxis = list(title = &quot;&quot;),
+             margin = list(l = 100), 
+             annotations = c(list(
+               text = &quot;Percent of Total Doses Administered (%)&quot;,
+               x = -0.2,
+               xref = &quot;paper&quot;,
+               y = 0.5,
+               showarrow = F,
+               textangle = -90)))
+
+# Figure 4
+
+fig4palette &lt;- c(&quot;#8AA399&quot;,&quot;#7D84B2&quot;,&quot;#FD96A9&quot;,&quot;#FFC857&quot;) # custom palette
+
+fig4 &lt;-
+  dataAge %&gt;%
+  ggplot(mapping = aes(x = demographic_value, y = region_fully_vax, 
+                       fill = demographic_value)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  labs(x = &quot;Age Group&quot;, y = &quot;&quot;, 
+       title = &quot;Vaccination Efforts by Age Group&quot;, 
+       fill = &quot;Age Group&quot;) +
+  scale_fill_manual(values = fig4palette) +
+  facet_wrap(~region)
+
+ggplotly(fig4, tooltip = c(&quot;x&quot;, &quot;y&quot;)) %&gt;% 
+  layout(yaxis = list(title = &quot;&quot;),
+             margin = list(l = 100), 
+             annotations = c(list(
+               text = &quot;Percent Fully Vaccinated (%)&quot;,
+               x = -0.1,
+               xref = &quot;paper&quot;,
+               y = 0.5,
+               showarrow = F,
+               textangle = -90)))
+
+
+# Figure 5
+fig5palette &lt;- c(&quot;#C78888&quot;, &quot;#88C7C2&quot;, &quot;#E7D366&quot;, &quot;#8AA399&quot;, 
+                 &quot;#7D84B2&quot;, &quot;#FD96A9&quot;, &quot;#FAA04C&quot;)
+
+fig5 &lt;-
+  dataRace %&gt;%
+  ggplot(mapping = aes(x = demographic_value, y = region_fully_vax, 
+                       fill = demographic_value)) +
+  geom_bar(stat=&quot;identity&quot;) +
+  labs(x = &quot;Race/Ethnicity&quot;, y = &quot;&quot;, 
+       title = &quot;Vaccination Efforts by Age&quot;, 
+       fill = &quot;Race/Ethnicity&quot;) +
+  scale_fill_manual(values = fig5palette) +
+  theme(axis.text.x = element_blank()) +
+  facet_wrap(~region)
+
+ggplotly(fig5, tooltip = c(&quot;x&quot;, &quot;y&quot;)) %&gt;% 
+  layout(yaxis = list(title = &quot;&quot;),
+             margin = list(l = 100), 
+             annotations = c(list(
+               text = &quot;Percent Fully Vaccinated (%)&quot;,
+               x = -0.2,
+               xref = &quot;paper&quot;,
+               y = 0.5,
+               showarrow = F,
+               textangle = -90)))</code></pre>
+</div>
+<div id="tables-source-code" class="section level3">
+<h3><u>Tables Source Code</u></h3>
+<pre class="r"><code># Table 1
+mergedCA %&gt;% 
+  filter(date == &quot;2021-10-31&quot;) %&gt;% # ensure desired date is displayed
+  group_by(region) %&gt;%
+  summarise(Fully_min = min(cumulative_fully_vaccinated/population)*100, 
+            Fully_mean = mean(cumulative_fully_vaccinated/population)*100,
+            Fully_max = max(cumulative_fully_vaccinated/population)*100,
+            Fully_sd = sd(cumulative_fully_vaccinated/population)*100) %&gt;% 
+  knitr::kable(col.names = c(&quot;Region&quot;,  # make table presentable with kable()
+                             &quot;Min %&quot;, 
+                             &quot;Mean %&quot;, 
+                             &quot;Max %&quot;,
+                             &quot;SD %&quot;), digits = 2, &quot;pipe&quot;, align = &quot;c&quot;)
+
+
+# Table 2
+mergedCA %&gt;% 
+  group_by(region) %&gt;%
+  summarise(Cases_min = min(cases), 
+            Cases_mean = mean(cases),
+            Cases_max = max(cases),
+            Cases_sd = sd(cases),
+            Deaths_min = min(deaths), 
+            Deaths_mean = mean(deaths),
+            Deaths_max = max(deaths),
+            Deaths_sd = sd(deaths),
+            Doses_min = min(total_doses), 
+            Doses_mean = mean(total_doses),
+            Doses_max = max(total_doses),
+            Doses_sd = sd(total_doses)) %&gt;% 
+  knitr::kable(col.names = c(&quot;Region&quot;, 
+                             &quot;Min Cases&quot;, 
+                             &quot;Mean Cases&quot;, 
+                             &quot;Max Cases&quot;,
+                             &quot;SD Cases&quot;,
+                             &quot;Min Deaths&quot;, 
+                             &quot;Mean Deaths&quot;, 
+                             &quot;Max Deaths&quot;,
+                             &quot;SD Deaths&quot;,
+                             &quot;Min Doses&quot;, 
+                             &quot;Mean Doses&quot;, 
+                             &quot;Max Doses&quot;,
+                             &quot;SD Doses&quot;), digits = 2, &quot;pipe&quot;, align = &quot;c&quot;)
+
+
+
+# Table 3
+mergedCA3 %&gt;% 
+  group_by(region) %&gt;%
+  summarise(JJ_min = min(jj_doses),
+            JJ_mean= mean(jj_doses),
+            JJ_max = max(jj_doses),
+            JJ_sd = sd(jj_doses),
+            JJ_cum = sum(jj_doses),
+            Mod_min = min(moderna_doses),
+            Mod_mean= mean(moderna_doses),
+            Mod_max = max(moderna_doses),
+            Mod_sd = sd(moderna_doses),
+            Mod_cum = sum(moderna_doses),
+            Pfi_min = min(pfizer_doses),
+            Pfi_mean= mean(pfizer_doses),
+            Pfi_max = max(pfizer_doses),
+            Pfi_sd = sd(pfizer_doses),
+            Pfi_cum = sum(pfizer_doses)) %&gt;% 
+  knitr::kable(col.names = c(&quot;Region&quot;, 
+                             &quot;Min J&amp;J&quot;, 
+                             &quot;Mean J&amp;J&quot;, 
+                             &quot;Max J&amp;J&quot;,
+                             &quot;SD J&amp;J&quot;,
+                             &quot;Cum. J&amp;J&quot;,
+                             &quot;Min Mod.&quot;, 
+                             &quot;Mean Mod.&quot;, 
+                             &quot;Max Mod.&quot;,
+                             &quot;SD Mod.&quot;,
+                             &quot;Cum. Mod.&quot;,
+                             &quot;Min Pfi.&quot;, 
+                             &quot;Mean Pfi.&quot;, 
+                             &quot;Max Pfi.&quot;,
+                             &quot;SD Pfi.&quot;,
+                             &quot;Cum. Pfi.&quot;), digits = 2, &quot;pipe&quot;, align = &quot;c&quot;)
+
+# Table 4
+dataAge2 &lt;- datawrangle2(&quot;Age Group&quot;)
+
+dataAge2 %&gt;%
+  group_by(region, demographic_value) %&gt;%
+  summarise(Perc_min = min(perc_fully_vax),
+            Perc_mean= mean(perc_fully_vax),
+            Perc_max = max(perc_fully_vax),
+            Perc_sd = sd(perc_fully_vax)) %&gt;% 
+  knitr::kable(col.names = c(&quot;Region&quot;,
+                             &quot;Demographic&quot;,
+                             &quot;Min %&quot;, 
+                             &quot;Mean %&quot;, 
+                             &quot;Max %&quot;,
+                             &quot;SD %&quot;), digits = 2, &quot;pipe&quot;, align = &quot;cccccc&quot;)
+
+
+# Table 5
+dataRace2 &lt;- datawrangle2(&quot;Race/Ethnicity&quot;)
+
+dataRace2 %&gt;%
+  filter(perc_fully_vax &lt; 100) %&gt;%
+  group_by(region, demographic_value) %&gt;%
+  summarise(Perc_min = min(perc_fully_vax),
+            Perc_mean= mean(perc_fully_vax),
+            Perc_max = max(perc_fully_vax),
+            Perc_sd = sd(perc_fully_vax)) %&gt;% 
+  knitr::kable(col.names = c(&quot;Region&quot;,
+                             &quot;Demographic&quot;,
+                             &quot;Min %&quot;, 
+                             &quot;Mean %&quot;, 
+                             &quot;Max %&quot;,
+                             &quot;SD %&quot;), digits = 2, &quot;pipe&quot;, align = &quot;cccccc&quot;)</code></pre>
+</div>
 
 
 

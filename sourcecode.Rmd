@@ -5,3 +5,359 @@ output:
         toc: TRUE
         toc_float: TRUE
 ---
+
+$$\\[.05in]$$
+
+This section of the website provides the source code for both the homepage and tables page of this project. Comments for chunks of code are provided to give context and give purpose to the code.
+
+$$\\[.1in]$$
+
+### [Source Code for Both]{.ul}
+
+```{r both, fig.show='hide', warnings = FALSE, eval = FALSE}
+# Load Libraries and Sources
+library(tidyverse)
+library(plotly)
+library(cowplot)
+library(RCurl)
+library(scales)
+source("datawrangle.R")
+
+## Load and Alter Data 
+download1 <- getURL("https://data.lacity.org/api/views/rpp7-mevy/rows.csv?accessType=DOWNLOAD")
+vaxCA <- read.csv(text = download1)
+
+covidCA <- read.csv(url("https://data.chhs.ca.gov/dataset/f333528b-4d38-4814-bebb-12db1f10f535/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a/download/covid19cases_test.csv"))
+
+covidCA <-
+  covidCA %>%
+  mutate(county = area) # Make variable names the same between the two datasets
+
+vaxCA <-
+  vaxCA %>%
+  mutate(date = as.Date(vaxCA$date, "%m/%d/%Y")) # Make data variable same format
+
+mergedCA <- merge(vaxCA, covidCA, 
+                  by = c("date","county"),
+                  all.x = TRUE)
+
+mergedCA <-
+  mergedCA %>%
+  filter(date >= as.Date("2020-12-15")) %>% # Start date of vaccines
+  filter(date <= as.Date("2021-10-31")) %>% # End date for consistency
+  group_by(date, county) %>% 
+  summarise(across(c(total_doses,cumulative_total_doses,
+                     pfizer_doses,cumulative_pfizer_doses,
+                     moderna_doses,cumulative_moderna_doses,
+                     jj_doses,cumulative_jj_doses,
+                     partially_vaccinated,
+                     total_partially_vaccinated,fully_vaccinated,
+                     cumulative_fully_vaccinated,at_least_one_dose,
+                     cumulative_at_least_one_dose,population,
+                     cases,cumulative_cases,deaths,
+                     cumulative_deaths,total_tests,
+                     cumulative_total_tests,positive_tests,
+                     cumulative_positive_tests), mean, .groups = date))
+
+mergedCA <-
+  mergedCA %>%
+  mutate(dose_standard = (cumulative_total_doses/population),
+         pfizer_perc = ((cumulative_pfizer_doses/cumulative_total_doses)*100),
+         moderna_perc = ((cumulative_moderna_doses/cumulative_total_doses)*100),
+         jj_perc = ((cumulative_jj_doses/cumulative_total_doses)*100),
+         perc_vaccinated = (cumulative_fully_vaccinated/population)*100,
+         perc_partial = (cumulative_at_least_one_dose/population)*100)
+
+# Region categories for each county below
+
+superior <- c("Butte", "Colusa", "Del Norte", "Glenn", "Humboldt", "Lake", "Lassen", "Mendocino", "Modoc", "Nevada", "Plumas", "Shasta", "Sierra", "Siskiyou", "Tehama", "Trinity")
+
+central <- c("Alpine", "Amador", "Calaveras", "El Dorado", "Fresno", "Inyo", "Kings", "Madera", "Mariposa", "Merced", "Mono", "Placer", "Sacramento", "San Joaquin", "Stanislaus", "Sutter", "Yuba", "Tulare", "Tuolumne", "Yolo")
+
+bay <- c("Alameda", "Contra Costa", "Marin", "Monterey", "Napa", "San Benito", "San Francisco", "San Mateo", "Santa Clara", "Santa Cruz", "Solano", "Sonoma")
+
+southern <- c("Imperial", "Kern", "Orange", "Riverside", "San Bernardino", "San Diego", "San Luis Obispo", "Santa Barbara", "Ventura", "Los Angeles")
+
+mergedCA <- # Sort counties into their categories
+  mergedCA %>% 
+  mutate(region = case_when(county %in% superior ~ "Superior California",
+                            county %in% central ~ "Central California",
+                            county %in% bay ~ "Bay Area",
+                            county %in% southern ~ "Southern California"))
+
+mergedCA3 <-
+  mergedCA %>%
+  group_by(region,date) %>%
+  summarise(county = county,
+            region = region,
+            ave_moderna = ave(moderna_perc),
+            ave_pfizer = ave(pfizer_perc),
+            ave_jj = ave(jj_perc),
+            moderna_perc = moderna_perc,
+            pfizer_perc = pfizer_perc,
+            jj_perc = jj_perc,
+            moderna_doses = moderna_doses,
+            pfizer_doses = pfizer_doses,
+            jj_doses = jj_doses)
+
+mergedCA3[is.na(mergedCA3)] = 0 # Some math is zero divided by zero; replace the errors
+
+dataAge <- datawrangle("Age Group") # Call on function to get data frame for age
+
+dataRace <- datawrangle("Race/Ethnicity") # Call on function to get data frame for race
+
+dataRace[6,3] <- 100.00 # Some data made some values above 100%; manual fix
+```
+
+### [Homepage Source Code]{.ul}
+
+```{r homepage, fig.show='hide', warnings = FALSE, eval = FALSE}
+
+# Figure 1
+fig1 <- 
+    mergedCA %>%
+    ggplot() + 
+    geom_line(aes(x = date, 
+                  y = cumulative_fully_vaccinated/population*100, 
+                  color = county)) +
+    labs(title = "Percent Fully Vaccinated Since Roll-out by Region", x = "Date", 
+         y = "", color = "County") +
+  facet_wrap(~region)
+
+ggplotly(fig1) %>% 
+  layout(yaxis = list(title = ""), # below code fixes axis label and title overlap
+             margin = list(l = 100), 
+             annotations = c(list(text = "Percent Fully Vaccinated (%)",
+                                  x = -0.10,
+                                  xref = "paper",
+                                  y = 0.5,
+                                  showarrow = F,
+                                  textangle = -90)))
+
+
+# Figure 2
+fig2 <- 
+  mergedCA %>%
+  ggplot(aes(group = region)) +
+  geom_line(mapping = aes(x = date, y = total_doses, color = "Doses Administered")) +
+  geom_line(mapping = aes(x = date, y = cases, color = "Case Count")) +
+  geom_line(mapping = aes(x = date, y = deaths, color = "Death Count")) +
+  labs(title = "Doses, Cases, and Deaths by Region", x = "Date", y = "") +
+  scale_colour_manual(values = c("Doses Administered"="#C78888", 
+                                   "Case Count"="#88C7C2", 
+                                   "Death Count"="#E7D366")) +
+  facet_wrap(~region, scales = "free_y", shrink = TRUE) +
+  scale_y_continuous(labels = comma) +
+  theme(legend.title = element_blank(), plot.title.position = "middle")
+  
+ggplotly(fig2, tooltip = c("x", "y")) %>% 
+  layout(yaxis = list(title = ""),
+             margin = list(l = 100), 
+             annotations = c(list(text = "Count",
+                                  x = -0.15,
+                                  xref = "paper",
+                                  y = 0.5,
+                                  showarrow = F,
+                                  textangle = -90)))
+
+
+# Figure 3
+fig3 <- 
+  mergedCA3 %>%
+  ggplot(aes(group = region)) +
+  geom_line(aes(x = date, y = ave_moderna, color = "Moderna")) +
+  geom_line(aes(x = date, y = ave_pfizer, color = "Pfizer")) +
+  geom_line(aes(x = date, y = ave_jj, color = "J&J")) +
+  scale_colour_manual(values = c("Moderna"="#C78888", 
+                                   "Pfizer"="#88C7C2", 
+                                   "J&J"="#E7D366")) +
+    labs(title = "Vaccination Efforts by Company", 
+         x = "Date", y = "", color = "Company") +
+    theme(legend.title = element_blank(), 
+          axis.title.y = element_text(hjust = -1.5)) +
+    facet_wrap(~region)
+
+ggplotly(fig3, tooltip = c("x", "y")) %>% 
+  layout(yaxis = list(title = ""),
+             margin = list(l = 100), 
+             annotations = c(list(
+               text = "Percent of Total Doses Administered (%)",
+               x = -0.2,
+               xref = "paper",
+               y = 0.5,
+               showarrow = F,
+               textangle = -90)))
+
+# Figure 4
+
+fig4palette <- c("#8AA399","#7D84B2","#FD96A9","#FFC857") # custom palette
+
+fig4 <-
+  dataAge %>%
+  ggplot(mapping = aes(x = demographic_value, y = region_fully_vax, 
+                       fill = demographic_value)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Age Group", y = "", 
+       title = "Vaccination Efforts by Age Group", 
+       fill = "Age Group") +
+  scale_fill_manual(values = fig4palette) +
+  facet_wrap(~region)
+
+ggplotly(fig4, tooltip = c("x", "y")) %>% 
+  layout(yaxis = list(title = ""),
+             margin = list(l = 100), 
+             annotations = c(list(
+               text = "Percent Fully Vaccinated (%)",
+               x = -0.1,
+               xref = "paper",
+               y = 0.5,
+               showarrow = F,
+               textangle = -90)))
+
+
+# Figure 5
+fig5palette <- c("#C78888", "#88C7C2", "#E7D366", "#8AA399", 
+                 "#7D84B2", "#FD96A9", "#FAA04C")
+
+fig5 <-
+  dataRace %>%
+  ggplot(mapping = aes(x = demographic_value, y = region_fully_vax, 
+                       fill = demographic_value)) +
+  geom_bar(stat="identity") +
+  labs(x = "Race/Ethnicity", y = "", 
+       title = "Vaccination Efforts by Age", 
+       fill = "Race/Ethnicity") +
+  scale_fill_manual(values = fig5palette) +
+  theme(axis.text.x = element_blank()) +
+  facet_wrap(~region)
+
+ggplotly(fig5, tooltip = c("x", "y")) %>% 
+  layout(yaxis = list(title = ""),
+             margin = list(l = 100), 
+             annotations = c(list(
+               text = "Percent Fully Vaccinated (%)",
+               x = -0.2,
+               xref = "paper",
+               y = 0.5,
+               showarrow = F,
+               textangle = -90)))
+```
+
+### [Tables Source Code]{.ul}
+
+```{r tablespage, fig.show='hide', warnings = FALSE, eval = FALSE}
+# Table 1
+mergedCA %>% 
+  filter(date == "2021-10-31") %>% # ensure desired date is displayed
+  group_by(region) %>%
+  summarise(Fully_min = min(cumulative_fully_vaccinated/population)*100, 
+            Fully_mean = mean(cumulative_fully_vaccinated/population)*100,
+            Fully_max = max(cumulative_fully_vaccinated/population)*100,
+            Fully_sd = sd(cumulative_fully_vaccinated/population)*100) %>% 
+  knitr::kable(col.names = c("Region",  # make table presentable with kable()
+                             "Min %", 
+                             "Mean %", 
+                             "Max %",
+                             "SD %"), digits = 2, "pipe", align = "c")
+
+
+# Table 2
+mergedCA %>% 
+  group_by(region) %>%
+  summarise(Cases_min = min(cases), 
+            Cases_mean = mean(cases),
+            Cases_max = max(cases),
+            Cases_sd = sd(cases),
+            Deaths_min = min(deaths), 
+            Deaths_mean = mean(deaths),
+            Deaths_max = max(deaths),
+            Deaths_sd = sd(deaths),
+            Doses_min = min(total_doses), 
+            Doses_mean = mean(total_doses),
+            Doses_max = max(total_doses),
+            Doses_sd = sd(total_doses)) %>% 
+  knitr::kable(col.names = c("Region", 
+                             "Min Cases", 
+                             "Mean Cases", 
+                             "Max Cases",
+                             "SD Cases",
+                             "Min Deaths", 
+                             "Mean Deaths", 
+                             "Max Deaths",
+                             "SD Deaths",
+                             "Min Doses", 
+                             "Mean Doses", 
+                             "Max Doses",
+                             "SD Doses"), digits = 2, "pipe", align = "c")
+
+
+
+# Table 3
+mergedCA3 %>% 
+  group_by(region) %>%
+  summarise(JJ_min = min(jj_doses),
+            JJ_mean= mean(jj_doses),
+            JJ_max = max(jj_doses),
+            JJ_sd = sd(jj_doses),
+            JJ_cum = sum(jj_doses),
+            Mod_min = min(moderna_doses),
+            Mod_mean= mean(moderna_doses),
+            Mod_max = max(moderna_doses),
+            Mod_sd = sd(moderna_doses),
+            Mod_cum = sum(moderna_doses),
+            Pfi_min = min(pfizer_doses),
+            Pfi_mean= mean(pfizer_doses),
+            Pfi_max = max(pfizer_doses),
+            Pfi_sd = sd(pfizer_doses),
+            Pfi_cum = sum(pfizer_doses)) %>% 
+  knitr::kable(col.names = c("Region", 
+                             "Min J&J", 
+                             "Mean J&J", 
+                             "Max J&J",
+                             "SD J&J",
+                             "Cum. J&J",
+                             "Min Mod.", 
+                             "Mean Mod.", 
+                             "Max Mod.",
+                             "SD Mod.",
+                             "Cum. Mod.",
+                             "Min Pfi.", 
+                             "Mean Pfi.", 
+                             "Max Pfi.",
+                             "SD Pfi.",
+                             "Cum. Pfi."), digits = 2, "pipe", align = "c")
+
+# Table 4
+dataAge2 <- datawrangle2("Age Group")
+
+dataAge2 %>%
+  group_by(region, demographic_value) %>%
+  summarise(Perc_min = min(perc_fully_vax),
+            Perc_mean= mean(perc_fully_vax),
+            Perc_max = max(perc_fully_vax),
+            Perc_sd = sd(perc_fully_vax)) %>% 
+  knitr::kable(col.names = c("Region",
+                             "Demographic",
+                             "Min %", 
+                             "Mean %", 
+                             "Max %",
+                             "SD %"), digits = 2, "pipe", align = "cccccc")
+
+
+# Table 5
+dataRace2 <- datawrangle2("Race/Ethnicity")
+
+dataRace2 %>%
+  filter(perc_fully_vax < 100) %>%
+  group_by(region, demographic_value) %>%
+  summarise(Perc_min = min(perc_fully_vax),
+            Perc_mean= mean(perc_fully_vax),
+            Perc_max = max(perc_fully_vax),
+            Perc_sd = sd(perc_fully_vax)) %>% 
+  knitr::kable(col.names = c("Region",
+                             "Demographic",
+                             "Min %", 
+                             "Mean %", 
+                             "Max %",
+                             "SD %"), digits = 2, "pipe", align = "cccccc")
+```

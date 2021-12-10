@@ -5,14 +5,134 @@ output:
         toc: TRUE
         toc_float: TRUE
 ---
-### [Sourcing the Data]{.ul}
 
+$$\\[.05in]$$
+
+### [Finding the Data]{.ul}
+
+Once deciding on primary and secondary research questions, the search for the datasets used in this project became easier. Since data repositories for COVID-19 are often readily available to the public these days, finding government websites to export data was fairly easy, and the LA City Data site and the California Department of Health and Human Services were wonderful sources of thorough data. However, because my questions were varied in topic, I had to use multiple datasets and find means to merge them in some cases.
+
+$$\\[.1in]$$
+
+### [About the Datasets Used]{.ul}
+
+There were three different sets of data used for this project: (1) data for CA counties and their administered vaccine doses, (2) data regarding COVID-19 cases and deaths for each CA county, and (3) demographic data based on vaccine administration. Each data set was used up until the date of October 31, 2021 for consistency and to ensure the most complete data was used.
+
+The data about vaccine doses for each county, titled "Vaccines by California County," came from LA city's data site at [this link](https://data.lacity.org/COVID-19/Vaccines-by-California-County/rpp7-mevy). This particular set has data from the start of vaccine roll-out in mid-December 2020 and is updated regularly. It includes dose data for each vaccine company per county, county population count, and administration date, among many other variables.
+
+Data regarding COVID-related cases and deaths, titled "Statewide COVID-19 Cases Deaths Tests," came from the California Department of Health and Human Services at [this link](https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a). Variables include COVID-related cases and deaths, both raw and cumulative, tests conducted, and population counts, among many other variables. The data begins in February of 2020 and is updated regularly.
+
+The set of data containing information about administered vaccines by demographic characteristics, titled "Vaccine demographic data," was sourced from [this link](https://data.lacity.org/COVID-19/Vaccine-demographic-data/iv7a-6rrq). It contains data about who is fully and partially vaccinated based on demographic characteristics like age and race and ethnicity. Complete data is roughly up to October 31, 2021, which explains why the figures and tables created for the data use that date.
 
 $$\\[.1in]$$
 
 ### [Wrangling the Data]{.ul}
 
+In original iterations of this project, the demographic data for age and race was incredibly large, rendering GitHub commits and pushes unable to be carried out. To fix this issue, functions for cleaning and wrangling the entire dataset were created. A single day of information was extracted from the demographic datasets, a region variable was created from county data, a variable for percent individuals fully vaccinated was created, and unique rows were eliminated for ease of plotting the data. The difference between the first and second *datawrangle()* and *datawrangle2()* functions is whether unique rows are removed in order to show how data is stratified when used in tables.
+
+##### ***datawrangle()***
+
+```{r wrangle, warnings = FALSE}
+datawrangle <- function(category) {
+  # Region categories to sort counties
+  superior <- c("Butte", "Colusa", "Del Norte", "Glenn", "Humboldt", "Lake", 
+                "Lassen", "Mendocino", "Modoc", "Nevada", "Plumas", "Shasta", 
+                "Sierra", "Siskiyou", "Tehama", "Trinity")
+  central <- c("Alpine", "Amador", "Calaveras", "El Dorado", "Fresno", "Inyo", 
+               "Kings", "Madera", "Mariposa", "Merced", "Mono", "Placer", 
+               "Sacramento", "San Joaquin", "Stanislaus", "Sutter", "Yuba", 
+               "Tulare", "Tuolumne", "Yolo")
+  bay <- c("Alameda", "Contra Costa", "Marin", "Monterey", "Napa", "San Benito", 
+           "San Francisco", "San Mateo", "Santa Clara", "Santa Cruz", "Solano", 
+           "Sonoma")
+  southern <- c("Imperial", "Kern", "Orange", "Riverside", "San Bernardino", 
+                "San Diego", "San Luis Obispo", "Santa Barbara", "Ventura", 
+                "Los Angeles")
+  
+  download3 <- getURL(
+    "https://data.lacity.org/api/views/iv7a-6rrq/rows.csv?accessType=DOWNLOAD")
+  demoCA <- read.csv(text = download3)
+  
+  demoCA <- 
+    demoCA %>%
+    filter(date == "10/31/2021 12:00:00 AM") %>%
+    filter(demographic_category == category) %>%
+    mutate(region = case_when(county %in% superior ~ "Superior",
+                              county %in% central ~ "Central",
+                              county %in% bay ~ "Bay Area",
+                              county %in% southern ~ "Southern")) %>%
+    summarise(date = date,
+              region = region,
+              county = county,
+              demographic_category = demographic_category,
+              demographic_value = demographic_value,
+              perc_fully_vax = (cumulative_fully_vaccinated/est_population))
+  
+  demoCA <- na.omit(demoCA)
+  
+  demoCA <-
+    demoCA %>%
+    group_by(region, demographic_value) %>%
+    summarise(region = region,
+              demographic_value = demographic_value,
+              region_fully_vax = mean(perc_fully_vax)*100)
+  
+  demoCA <- unique(demoCA)
+  
+  return(demoCA)
+}
+```
 
 $$\\[.1in]$$
 
+##### ***datawrangle2()***
 
+```{r wrangle2, warnings = FALSE}
+datawrangle2 <- function(category) {
+  # Region categories to sort counties
+  superior <- c("Butte", "Colusa", "Del Norte", "Glenn", "Humboldt", "Lake", 
+                "Lassen", "Mendocino", "Modoc", "Nevada", "Plumas", "Shasta", 
+                "Sierra", "Siskiyou", "Tehama", "Trinity")
+  central <- c("Alpine", "Amador", "Calaveras", "El Dorado", "Fresno", "Inyo", 
+               "Kings", "Madera", "Mariposa", "Merced", "Mono", "Placer", 
+               "Sacramento", "San Joaquin", "Stanislaus", "Sutter", "Yuba", 
+               "Tulare", "Tuolumne", "Yolo")
+  bay <- c("Alameda", "Contra Costa", "Marin", "Monterey", "Napa", "San Benito", 
+           "San Francisco", "San Mateo", "Santa Clara", "Santa Cruz", "Solano", 
+           "Sonoma")
+  southern <- c("Imperial", "Kern", "Orange", "Riverside", "San Bernardino", 
+                "San Diego", "San Luis Obispo", "Santa Barbara", "Ventura", 
+                "Los Angeles")
+  
+  download3 <- getURL(
+    "https://data.lacity.org/api/views/iv7a-6rrq/rows.csv?accessType=DOWNLOAD")
+  demoCA <- read.csv(text = download3)
+  
+  demoCA <- 
+    demoCA %>%
+    filter(date == "10/31/2021 12:00:00 AM") %>%
+    filter(demographic_category == category) %>%
+    mutate(region = case_when(county %in% superior ~ "Superior",
+                              county %in% central ~ "Central",
+                              county %in% bay ~ "Bay Area",
+                              county %in% southern ~ "Southern")) %>%
+    summarise(date = date,
+              region = region,
+              county = county,
+              demographic_category = demographic_category,
+              demographic_value = demographic_value,
+              perc_fully_vax = (cumulative_fully_vaccinated/est_population))
+  
+  demoCA <- na.omit(demoCA)
+  
+  demoCA <-
+    demoCA %>%
+    group_by(region, demographic_value) %>%
+    summarise(region = region,
+              county = county,
+              demographic_value = demographic_value,
+              perc_fully_vax = perc_fully_vax*100)
+  
+  return(demoCA)
+}
+```

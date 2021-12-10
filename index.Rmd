@@ -6,35 +6,27 @@ output:
         toc_float: TRUE
 ---
 
-Welcome to the website for my final project for the fall 2021 PM-566 semester! My name is Jaxon Abercrombie, and I am a fourth year undergraduate student simultaneously earning a bachelor's degree in Health Promotion & Disease Prevention and master's degree in Public Health Data Science. This homepage provides the most important output from the project, and the other pages of this website dive deeper into the questions stated below more deeply. Plots were mainly divided up by the four main regions of California: Superior California, Southern California, Central California, and the Bay Area. More country-specific analysis can be found on other pages of this website for conserving room on the homepage.
+Welcome to the website for my project that investigates California's COVID-19 vaccination efforts! My name is Jaxon Abercrombie, and I am a fourth year undergraduate student simultaneously earning a bachelor's degree in Health Promotion & Disease Prevention and master's degree in Public Health Data Science. This homepage provides the most important output from the project, and the other pages of this website give provide context to the data used, tables to compliment the figures from the homepage, source code, and my contact information.
 
 $$\\[.1in]$$
 
 ### [Background]{.ul}
 
-Needless to say, the ongoing COVID-19 pandemic continues to disrupt daily life. However, with the roll-out of COVID-19 vaccines starting back in December of 2020, certain strides towards normalcy have been made. California's governor, Gavin Newsom, speaks regularly about the success that our state has had with controlling the virus through immunization efforts. While California is certainly diverse and varies in demographic composition and physical environment by region and county, investigating how vaccine uptake has varied by these geographic locations would be fascinating. Especially as new variants of COVID-19 come about, identifying gaps in vaccine roll-out for different demographic groups and discovering which counties require more vaccination efforts overall is crucial. While increases in cases and death evidently come from these new variants, recognizing whether these surges influence vaccination uptake would be interesting to investigate as well. Additionally, whether someone is "Team Pfizer," "Team Moderna," or "Team Johnson & Johnson" has been a popular topic of discussion since roll-out began. Whether there are legitimate differences in a company's vaccine market share is also a topic of interest.
+Needless to say, the ongoing COVID-19 pandemic continues to disrupt daily life. However, with the roll-out of COVID-19 vaccines starting back in December of 2020, certain strides towards normalcy have been made. California's governor, Gavin Newsom, speaks regularly about the success that our state has had with controlling the virus through immunization efforts. While California is certainly diverse and varies in demographic composition and physical environment by region and county, investigating how vaccine uptake has varied by these geographic locations would be fascinating. Especially as new variants of COVID-19 come about, identifying gaps in vaccine roll-out for different demographic groups and discovering which counties require more vaccination efforts overall is crucial. While increases in cases and death evidently come from these new variants, recognizing whether these surges influence vaccination uptake would be interesting to investigate as well. Additionally, whether someone is "Team Pfizer," "Team Moderna," or "Team Johnson & Johnson" has been a popular topic of discussion since roll-out began. Whether there are legitimate differences in a company's vaccine market share is also a topic of interest. Continue scrolling to discover some fascinating findings!
 
 $$\\[.1in]$$
 
 ### [Questions of Interest]{.ul}
 
-The overarching, primary question at hand is: *How have COVID-19 vaccination rates varied by county in California since their initial roll-out?* Furthermore, there are two main secondary questions that dig deeper into the data sets used:
+The overarching, primary question at hand is: *How have COVID-19 vaccination rates varied by county and/or region in California since their initial roll-out?*
+
+Furthermore, there are some secondary questions that dig deeper into the primary question:
 
 1.  How do trends in cases and deaths potentially affect immunization rates for California as a whole?
 
 2.  How do vaccination efforts vary by vaccine company (Pfizer, Moderna, Johnson & Johnson)?
 
-$$\\[.1in]$$
-
-### [About the Datasets]{.ul}
-
-There were three different sets of data used for this project: (1) data for CA counties and their administered vaccine doses, (2) data regarding COVID-19 cases and deaths for each CA county, and (3) demographic data based on vaccine administration.
-
-The data about vaccine doses for each county, titled "Vaccines by California County," came from LA city's data site at [this link](https://data.lacity.org/COVID-19/Vaccines-by-California-County/rpp7-mevy). This particular set has data from the start of vaccine roll-out in mid-December 2020 up until early November 2021 and includes dose data for each vaccine company per county, county population count, and administration date.
-
-Data regarding COVID-related cases and deaths, titled "Statewide COVID-19 Cases Deaths Tests," came from the California Department of Health and Human Services at [this link](https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a). COVID-related cases and deaths, both raw and cumulative, are included for every day since February 2020 to early November 2021 among many other variables.
-
-The set of data containing information about administered vaccines by demographic characteristics, titled "Vaccine demographic data," was sourced from [this link](https://data.lacity.org/COVID-19/Vaccine-demographic-data/iv7a-6rrq). It contains data about who is fully and partially vaccinated based on age and race and ethnicity.
+3.  How do vaccination efforts vary by age and race/ethnicity?
 
 $$\\[.1in]$$
 
@@ -71,7 +63,7 @@ mergedCA <- merge(vaxCA, covidCA,
 mergedCA <-
   mergedCA %>%
   filter(date >= as.Date("2020-12-15")) %>%
-  filter(date <= as.Date("2021-11-03")) %>%
+  filter(date <= as.Date("2021-10-31")) %>%
   group_by(date, county) %>% 
   summarise(across(c(total_doses,cumulative_total_doses,
                      pfizer_doses,cumulative_pfizer_doses,
@@ -139,11 +131,9 @@ ggplotly(fig1) %>%
 
 ```
 
-**Description:**
+**Description:** The figure above depicts how vaccine efforts have been across four main regions of California, with country-specific data illustrated for each region. Feel free to toggle with the available counties to make direct comparisons or remove unwanted lines! The data spans from the debut of the COVID-19 vaccine on December 15th, 2020 up until October 31st, 2021 (as with all following figures). Each region has a comparable number of counties, making these groupings representative and more reliable for drawing conclusions.
 
-**Findings:**
-
-The figure above depicts how vaccine efforts have been across four main regions of California, with country-specific data illustrated for each region. Feel free to toggle with the available counties to make direct comparisons or remove unwanted lines! The data spans from the debut of the COVID-19 vaccine on December 15th, 2020 up until November 3rd, 2021 (as with all following figures). Each region has a comparable number of counties, making these groupings representative and more reliable for drawing conclusions.Generally, each region experienced similar uptake in vaccination, as seen with almost congruent plot shapes. Additionally, each region and respective county followed a similar path of surging after April 2021's eligibility expansion and began to slow quickly during summer of 2021. However, there are certainly some regional differences, like the Bay Area having the highest percent of fully vaccinated individuals and Superior California the lowest. Furthermore, regions vary in range of the percent of fully vaccinated individuals; the Bay Area has a range of about 20% between its lowest and highest performing counties, while Superior California has a difference of about 30% between its lowest and highest. Overall, it appears that urban areas (Bay Area and Southern California) have more vaccine uptake than rural areas (Central and Superior California) on average, which will be something to consider with subsequent figures on this website. Access comes to mind as an immediate hurdle for vaccination, as physical distance from urban centers may make rural living disadvantageous.
+**Findings:** Generally, each region experienced similar uptake in vaccination, as seen with almost congruent plot shapes. Additionally, each region and respective county followed a similar path of surging after April 2021's eligibility expansion and began to slow quickly during summer of 2021. However, there are certainly some regional differences, like the Bay Area having the highest percent of fully vaccinated individuals and Superior California the lowest. Furthermore, regions vary in range of the percent of fully vaccinated individuals; the Bay Area has a range of about 20% between its lowest and highest performing counties, while Superior California has a difference of about 30% between its lowest and highest. Overall, it appears that urban areas (Bay Area and Southern California) have more vaccine uptake than rural areas (Central and Superior California) on average, which will be something to consider with subsequent figures on this website. Access comes to mind as an immediate hurdle for vaccination, as physical distance from urban centers may make rural living disadvantageous.
 
 $$\\[.1in]$$
 
@@ -179,7 +169,9 @@ ggplotly(fig2, tooltip = c("x", "y")) %>%
 mergedCA[is.na(mergedCA)] = 0
 ```
 
-Figure 2 illustrates a potential relationship between vaccine uptake and cases and deaths. At first, individuals rushed to be vaccinated for their own safety, but some individuals remained hesitant and lacked motivation to become vaccinated for many months. Though, changes in cases and deaths due to variants made for rises in the number of vaccine doses administered. A rise in cases appeared to motivate greater vaccine uptake after the start of July 2021, likely because of the once novel Delta variant. Compared to the quasi-plateaus of vaccine uptake as seen in Figure 1, there are visible surges between July and October of 2021 for three regions, excluding the Bay Area. This relationship may also have been influenced by policy efforts to require vaccines in public spaces, eligibility for booster shots, and the realization of the effectiveness of vaccination. Nonetheless, it seems natural for people to protect themselves when a threat is imminent, despite prior sentiments against vaccination.
+**Description:** Figure 2 illustrates a potential relationship between vaccine uptake and cases and deaths. The y-axis simply a count of cases, deaths, and doses administered in order to overlay the information. Ultimately, the purpose of the figure is to gauge potential changes in vaccination behaviors as a result of rising case and death counts, so numerical values are less important here.
+
+**Findings:** At first, when vaccines became available in December, individuals rushed to be vaccinated for their own safety, but some individuals remained hesitant and lacked motivation to become vaccinated for many months. Though, changes in cases and deaths due to variants appear to make for rises in the number of vaccine doses administered during the summer of 2021. A rise in cases appeared to motivate greater vaccine uptake after the start of July 2021, likely because of the once novel Delta variant. Compared to the quasi-plateaus of vaccine uptake as seen in Figure 1, there are visible surges between July and October of 2021 for three regions, excluding the Bay Area. This relationship may also have been influenced by policy efforts to require vaccines in public spaces, eligibility for booster shots, and the realization of the effectiveness of vaccination. Nonetheless, it seems natural for people to protect themselves when a threat is imminent, despite prior sentiments against vaccination.
 
 $$\\[.1in]$$
 
@@ -224,7 +216,9 @@ ggplotly(fig3, tooltip = c("x", "y")) %>%
                textangle = -90)))
 ```
 
-Understanding how vaccination efforts differ by company may influence future roll-outs of vaccines, since timeliness of roll-out and targeting specific areas may make one company a preferable candidate compared to another. Evident in the figure above, the more "rural" regions tend to receive Moderna doses rather than the Pfizer doses that more "urban" regions tend to receive. Johnson & Johnson doses are limited across all regions, and even when accounting for J&J being single-dose, its impact appears limited. That could potentially be because of defects and withdrawal from markets at times. Assuming that populous urban areas were first to receive vaccines because of supply chain ease with product shipment at ports, Pfizer certainly made an impact. Being the first to reach the vaccine market and be prevalent in populous areas made for a sustainable difference in uptake. Despite Moderna's later debut as a COVID-19 vaccine company, its use surged quickly and ultimately remained dominant in Superior and Central California. Whether it was purposefully more available in those two regions is unknown, but its popularity may have been influenced by Pfizer's presence elsewhere. What appears most fascinating about the relationship between Moderna and Pfizer is that Moderna surpassed Pfizer at one point in each region, which may demonstrate a supply surge that lead to temporary or sustained success.
+**Description:** This figure depicts the share of vaccine prevalence among the three main COVID-19 vaccine companies over the course of vaccine roll-out to October 31st. Share is defined as the percent a vaccine takes up in the market at a given time. Understanding how vaccination efforts differ by company may influence future roll-outs of vaccines, since timeliness of roll-out and targeting specific areas may make one company a preferable candidate compared to another.
+
+**Findings:** Evident in the figure above, the more "rural" regions tend to receive Moderna doses rather than the Pfizer doses that more "urban" regions tend to receive. Johnson & Johnson doses are limited across all regions, and even when accounting for J&J being single-dose, its impact appears limited. That could potentially be because of defects and withdrawal from markets at times. Assuming that populous urban areas were first to receive vaccines because of supply chain ease with product shipment at ports, Pfizer certainly made an impact. Being the first to reach the vaccine market and be prevalent in populous areas made for a sustainable difference in uptake. Despite Moderna's later debut as a COVID-19 vaccine company, its use surged quickly and ultimately remained dominant in Superior and Central California. Whether it was purposefully more available in those two regions is unknown, but its popularity may have been influenced by Pfizer's presence elsewhere. What appears most fascinating about the relationship between Moderna and Pfizer is that Moderna surpassed Pfizer at one point in each region, which may demonstrate a supply surge that lead to temporary or sustained success.
 
 $$\\[.1in]$$
 
@@ -257,6 +251,10 @@ ggplotly(fig4, tooltip = c("x", "y")) %>%
                showarrow = F,
                textangle = -90)))
 ```
+
+**Description:** Figure 4 depicts the current percentages (by October 31, 2021) of fully vaccinated individuals by age group for each California region. Using percentages makes comparisons between regions more tangible, since it is a standardized approach.
+
+**Findings:** Evident from the figure above, the 50-64 age group is the most vaccinated across most regions, with the 12-17 age group the least vaccinated overall. Similar to Figure 1, vaccination efforts are relatively lacking in Superior and Central California compared to the Bay Area and Southern California. These differences in vaccination percentages may be attributable to differences in eligibility phases; the elderly could be vaccinated first, with approval for youth vaccination only happening in more recent months. The eligibility differences may account for wider ranges between the highest and lowest groups within regions. For example, the gap between the 12-17 and 65+ age group in Superior California is far larger than that of the Bay Area. More equivalent percentages across age groups within a region may demonstrate a steady availability and access to vaccines, since those who want the vaccine likely have received it already. Additionally, it is important to acknowledge how the age groups vary in size; 18-49 represents a far larger group than 12-17, for example. Regardless, even larger groups in number have the capability of outperforming others in percent.
 
 $$\\[.1in]$$
 
@@ -295,17 +293,63 @@ ggplotly(fig5, tooltip = c("x", "y")) %>%
                textangle = -90)))
 ```
 
+**Description:** Figure 5 depicts the current percentages (by October 31, 2021) of fully vaccinated individuals by race and ethnicity for each California region. Using percentages makes comparisons between regions more tangible, since it is a standardized approach.
+
+**Findings:** Evident from the figure above, Native Hawaiian and Asian populations significantly dominate each region in vaccination percentage, while multiracial, Latinx, and Black populations trail behind most other groups. Again, Superior and Central California fall behind the Bay Area and Southern California in percentages overall. Unlike age groups from Figure 4, the differences in rates between race and ethnicity are not attributable to expanding vaccination eligibility, since biological characteristics like age and conditions guided that expansion. Therefore, any discrepancy in vaccination rates are likely attributable to historical context of wronging groups in vaccine trials, mistrust, or access because of structural inequity that non-white groups face most often. Regardless of region, there are visible gaps between racial and ethnic groups. The high percentages in Native Hawaiian groups may be attributable to them being a smaller population and therefore easier to increase percentages with. The figure allows for comparisons between regions, making conclusions like Native American populations faring better in the Bay Area compared to Superior California by about 22%, for example.
+
 $$\\[.1in]$$
 
 ### [Overall Takeaways]{.ul}
 
-Text
+Some overall takeaways from each figure above are...
+
+-   Figure 1
+
+    -   Each region experiences similar "S" shapes in their vaccination percents over time
+
+    -   Overall, vaccination efforts are highest in the Bay Area and least successful in Superior California
+
+    -   The largest differences between counties happen in Superior California, and the smallest in the Bay Area
+
+    -   Geography may play a huge role in vaccine uptake
+
+-   Figure 2
+
+    -   Rises in cases and deaths appear to increase the administering of vaccines, most prominently in the summer of 2021
+
+    -   Changes in vaccine hesitancy may be attributable to case/death increase or other external factors like public policy
+
+-   Figure 3
+
+    -   Pfizer dominates in predominantly urban regions
+
+    -   Moderna dominates in predominantly rural regions
+
+    -   Johnson & Johnson, even being a single-dose vaccine, holds little share of the market of vaccines in all regions
+
+-   Figure 4
+
+    -   Differences between age groups are most prominent within Superior California and Central California, and the Bay Area and Southern California the least
+
+    -   Younger age groups are usually fiully vaccinated less often than older age groups
+
+-   Figure 5
+
+    -   Native Hawaiian and Asian populations are most often vaccinated, with Latinx, Multiracial, and Black populations the least
+
+    -   Gaps in vaccination percentages are common among all regions for race/ethnicity
+
+-   Common themes -
+
+    -   Urban areas succeed in vaccination efforts more often, warranting more attention be placed on rural areas
+
+    -   Large discrepancies between racial and ethnic groups highlight the need for programs that cater to more underserved populations
 
 $$\\[.1in]$$
 
 ### [Looking Forward]{.ul}
 
-Traditionally, COVID-19 data is shown aggregated across the U.S. "Three-thousand new cases per day" holds less potential to drive interventions than "only 53% of Black people in the Bay Area are fully vaccinated." This project and the creation of interactive plots encouraged me to investigate a variety of social determinants of health like location, age, and race/ethnicity in depth, which is crucial for my future in championing health equity. Moving forward, I am more informed about how California functions beyond the state-level with COVID-19, and I now can inform peers about inequities found from this project. A future version of this project with information about booster shots will be incredibly exciting, since uptake of booster shots may be vastly different than the initial doses of the COVID-19 vaccine. Now equipped with website and visualization skills, I feel eager to take on a new project!
+Traditionally, COVID-19 data is shown aggregated across the U.S. "Three-thousand new cases per day" holds less potential to drive interventions than "only 54% of Black people in the Bay Area are fully vaccinated." This project and the creation of interactive plots encouraged me to investigate a variety of social determinants of health like location, age, and race/ethnicity in depth, which is crucial for my future in championing health equity. Moving forward, I am more informed about how California functions beyond the state-level with COVID-19, and I now can inform peers about inequities found from this project. A future version of this project with information about booster shots will be incredibly exciting, since uptake of booster shots may be vastly different than the initial doses of the COVID-19 vaccine. Now equipped with website and visualization skills, I feel eager to take on a new project!
 
 $$\\[.1in]$$
 

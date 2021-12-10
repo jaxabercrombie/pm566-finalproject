@@ -313,7 +313,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Investigating California's Vaccination Efforts by Region/County</a>
+      <a class="navbar-brand" href="index.html">Investigating California's COVID-19 Vaccination Efforts by Region and County</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -349,13 +349,125 @@ div.tocify {
 </div>
 
 
-<div id="sourcing-the-data" class="section level3">
-<h3><u>Sourcing the Data</u></h3>
+<p><span class="math display">\[\\[.05in]\]</span></p>
+<div id="finding-the-data" class="section level3">
+<h3><u>Finding the Data</u></h3>
+<p>Once deciding on primary and secondary research questions, the search for the datasets used in this project became easier. Since data repositories for COVID-19 are often readily available to the public these days, finding government websites to export data was fairly easy, and the LA City Data site and the California Department of Health and Human Services were wonderful sources of thorough data. However, because my questions were varied in topic, I had to use multiple datasets and find means to merge them in some cases.</p>
+<p><span class="math display">\[\\[.1in]\]</span></p>
+</div>
+<div id="about-the-datasets-used" class="section level3">
+<h3><u>About the Datasets Used</u></h3>
+<p>There were three different sets of data used for this project: (1) data for CA counties and their administered vaccine doses, (2) data regarding COVID-19 cases and deaths for each CA county, and (3) demographic data based on vaccine administration. Each data set was used up until the date of October 31, 2021 for consistency and to ensure the most complete data was used.</p>
+<p>The data about vaccine doses for each county, titled “Vaccines by California County,” came from LA city’s data site at <a href="https://data.lacity.org/COVID-19/Vaccines-by-California-County/rpp7-mevy">this link</a>. This particular set has data from the start of vaccine roll-out in mid-December 2020 and is updated regularly. It includes dose data for each vaccine company per county, county population count, and administration date, among many other variables.</p>
+<p>Data regarding COVID-related cases and deaths, titled “Statewide COVID-19 Cases Deaths Tests,” came from the California Department of Health and Human Services at <a href="https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state/resource/046cdd2b-31e5-4d34-9ed3-b48cdbc4be7a">this link</a>. Variables include COVID-related cases and deaths, both raw and cumulative, tests conducted, and population counts, among many other variables. The data begins in February of 2020 and is updated regularly.</p>
+<p>The set of data containing information about administered vaccines by demographic characteristics, titled “Vaccine demographic data,” was sourced from <a href="https://data.lacity.org/COVID-19/Vaccine-demographic-data/iv7a-6rrq">this link</a>. It contains data about who is fully and partially vaccinated based on demographic characteristics like age and race and ethnicity. Complete data is roughly up to October 31, 2021, which explains why the figures and tables created for the data use that date.</p>
 <p><span class="math display">\[\\[.1in]\]</span></p>
 </div>
 <div id="wrangling-the-data" class="section level3">
 <h3><u>Wrangling the Data</u></h3>
+<p>In original iterations of this project, the demographic data for age and race was incredibly large, rendering GitHub commits and pushes unable to be carried out. To fix this issue, functions for cleaning and wrangling the entire dataset were created. A single day of information was extracted from the demographic datasets, a region variable was created from county data, a variable for percent individuals fully vaccinated was created, and unique rows were eliminated for ease of plotting the data. The difference between the first and second <em>datawrangle()</em> and <em>datawrangle2()</em> functions is whether unique rows are removed in order to show how data is stratified when used in tables.</p>
+<div id="datawrangle" class="section level5">
+<h5><strong><em>datawrangle()</em></strong></h5>
+<pre class="r"><code>datawrangle &lt;- function(category) {
+  # Region categories to sort counties
+  superior &lt;- c(&quot;Butte&quot;, &quot;Colusa&quot;, &quot;Del Norte&quot;, &quot;Glenn&quot;, &quot;Humboldt&quot;, &quot;Lake&quot;, 
+                &quot;Lassen&quot;, &quot;Mendocino&quot;, &quot;Modoc&quot;, &quot;Nevada&quot;, &quot;Plumas&quot;, &quot;Shasta&quot;, 
+                &quot;Sierra&quot;, &quot;Siskiyou&quot;, &quot;Tehama&quot;, &quot;Trinity&quot;)
+  central &lt;- c(&quot;Alpine&quot;, &quot;Amador&quot;, &quot;Calaveras&quot;, &quot;El Dorado&quot;, &quot;Fresno&quot;, &quot;Inyo&quot;, 
+               &quot;Kings&quot;, &quot;Madera&quot;, &quot;Mariposa&quot;, &quot;Merced&quot;, &quot;Mono&quot;, &quot;Placer&quot;, 
+               &quot;Sacramento&quot;, &quot;San Joaquin&quot;, &quot;Stanislaus&quot;, &quot;Sutter&quot;, &quot;Yuba&quot;, 
+               &quot;Tulare&quot;, &quot;Tuolumne&quot;, &quot;Yolo&quot;)
+  bay &lt;- c(&quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Monterey&quot;, &quot;Napa&quot;, &quot;San Benito&quot;, 
+           &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Santa Cruz&quot;, &quot;Solano&quot;, 
+           &quot;Sonoma&quot;)
+  southern &lt;- c(&quot;Imperial&quot;, &quot;Kern&quot;, &quot;Orange&quot;, &quot;Riverside&quot;, &quot;San Bernardino&quot;, 
+                &quot;San Diego&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Ventura&quot;, 
+                &quot;Los Angeles&quot;)
+  
+  download3 &lt;- getURL(
+    &quot;https://data.lacity.org/api/views/iv7a-6rrq/rows.csv?accessType=DOWNLOAD&quot;)
+  demoCA &lt;- read.csv(text = download3)
+  
+  demoCA &lt;- 
+    demoCA %&gt;%
+    filter(date == &quot;10/31/2021 12:00:00 AM&quot;) %&gt;%
+    filter(demographic_category == category) %&gt;%
+    mutate(region = case_when(county %in% superior ~ &quot;Superior&quot;,
+                              county %in% central ~ &quot;Central&quot;,
+                              county %in% bay ~ &quot;Bay Area&quot;,
+                              county %in% southern ~ &quot;Southern&quot;)) %&gt;%
+    summarise(date = date,
+              region = region,
+              county = county,
+              demographic_category = demographic_category,
+              demographic_value = demographic_value,
+              perc_fully_vax = (cumulative_fully_vaccinated/est_population))
+  
+  demoCA &lt;- na.omit(demoCA)
+  
+  demoCA &lt;-
+    demoCA %&gt;%
+    group_by(region, demographic_value) %&gt;%
+    summarise(region = region,
+              demographic_value = demographic_value,
+              region_fully_vax = mean(perc_fully_vax)*100)
+  
+  demoCA &lt;- unique(demoCA)
+  
+  return(demoCA)
+}</code></pre>
 <p><span class="math display">\[\\[.1in]\]</span></p>
+</div>
+<div id="datawrangle2" class="section level5">
+<h5><strong><em>datawrangle2()</em></strong></h5>
+<pre class="r"><code>datawrangle2 &lt;- function(category) {
+  # Region categories to sort counties
+  superior &lt;- c(&quot;Butte&quot;, &quot;Colusa&quot;, &quot;Del Norte&quot;, &quot;Glenn&quot;, &quot;Humboldt&quot;, &quot;Lake&quot;, 
+                &quot;Lassen&quot;, &quot;Mendocino&quot;, &quot;Modoc&quot;, &quot;Nevada&quot;, &quot;Plumas&quot;, &quot;Shasta&quot;, 
+                &quot;Sierra&quot;, &quot;Siskiyou&quot;, &quot;Tehama&quot;, &quot;Trinity&quot;)
+  central &lt;- c(&quot;Alpine&quot;, &quot;Amador&quot;, &quot;Calaveras&quot;, &quot;El Dorado&quot;, &quot;Fresno&quot;, &quot;Inyo&quot;, 
+               &quot;Kings&quot;, &quot;Madera&quot;, &quot;Mariposa&quot;, &quot;Merced&quot;, &quot;Mono&quot;, &quot;Placer&quot;, 
+               &quot;Sacramento&quot;, &quot;San Joaquin&quot;, &quot;Stanislaus&quot;, &quot;Sutter&quot;, &quot;Yuba&quot;, 
+               &quot;Tulare&quot;, &quot;Tuolumne&quot;, &quot;Yolo&quot;)
+  bay &lt;- c(&quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Monterey&quot;, &quot;Napa&quot;, &quot;San Benito&quot;, 
+           &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Santa Cruz&quot;, &quot;Solano&quot;, 
+           &quot;Sonoma&quot;)
+  southern &lt;- c(&quot;Imperial&quot;, &quot;Kern&quot;, &quot;Orange&quot;, &quot;Riverside&quot;, &quot;San Bernardino&quot;, 
+                &quot;San Diego&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Ventura&quot;, 
+                &quot;Los Angeles&quot;)
+  
+  download3 &lt;- getURL(
+    &quot;https://data.lacity.org/api/views/iv7a-6rrq/rows.csv?accessType=DOWNLOAD&quot;)
+  demoCA &lt;- read.csv(text = download3)
+  
+  demoCA &lt;- 
+    demoCA %&gt;%
+    filter(date == &quot;10/31/2021 12:00:00 AM&quot;) %&gt;%
+    filter(demographic_category == category) %&gt;%
+    mutate(region = case_when(county %in% superior ~ &quot;Superior&quot;,
+                              county %in% central ~ &quot;Central&quot;,
+                              county %in% bay ~ &quot;Bay Area&quot;,
+                              county %in% southern ~ &quot;Southern&quot;)) %&gt;%
+    summarise(date = date,
+              region = region,
+              county = county,
+              demographic_category = demographic_category,
+              demographic_value = demographic_value,
+              perc_fully_vax = (cumulative_fully_vaccinated/est_population))
+  
+  demoCA &lt;- na.omit(demoCA)
+  
+  demoCA &lt;-
+    demoCA %&gt;%
+    group_by(region, demographic_value) %&gt;%
+    summarise(region = region,
+              county = county,
+              demographic_value = demographic_value,
+              perc_fully_vax = perc_fully_vax*100)
+  
+  return(demoCA)
+}</code></pre>
+</div>
 </div>
 
 
