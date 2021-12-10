@@ -5,7 +5,7 @@ navbar:
   left:
     - text: "Project Homepage"
       href: index.html
-    - text: "Data Sourcing and Processing"
+    - text: "Data Sourcing and Wrangling"
       href: data.html
     - text: "Data Tables"
       href: tables.html
