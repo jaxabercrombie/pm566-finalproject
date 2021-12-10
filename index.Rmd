@@ -1,5 +1,5 @@
 ---
-title: "About this Project"
+title: "Project Homepage"
 output: 
     html_document:
         toc: TRUE
@@ -355,4 +355,4 @@ $$\\[.1in]$$
 
 ### [Download Full Report]{.ul}
 
-If you want to download the PDF of my entire report for this project, click [here](https://github.com/jaxabercrombie/finalproject-pm566/raw/master/PM-566%20Final%20Project%20Write-up.pdf)!
+If you want to download the PDF of my entire report for this project, click [here](https://github.com/jaxabercrombie/pm566-finalproject/raw/master/PM-566%20Final%20Project%20Write-up.pdf)!
