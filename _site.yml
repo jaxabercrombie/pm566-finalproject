@@ -13,6 +13,16 @@ navbar:
       href: sourcecode.html
     - text: "Contact Information"
       href: contact.html
+    - text: "PM-606 Progress Report #1"
+      href: Prog1.html
+    - text: "PM-606 Progress Report #2"
+      href: Prog2.html
+    - text: "PM-606 Progress Report #3"
+      href: Prog3.html
+    - text: "PM-606 Final Report (w/o source code)"
+      href: fp-h.html
+    - text: "PM-606 Final Report (w/ source code)"
+      href: fp-i.html
 output:
   html_document:
     theme: sandstone
